@@ -1,0 +1,29 @@
+version: '3.8'
+
+# Local development only — NOT used in staging/production, which run
+# managed RDS PostgreSQL and ElastiCache Redis (Architecture Blueprint
+# Section 17). This gives a working DATABASE_URL/REDIS_URL for
+# `npm run start:dev` and for the integration-test Postgres instance
+# referenced in the Phase 3 Plan (Section 14).
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: constructeasy
+      POSTGRES_PASSWORD: constructeasy
+      POSTGRES_DB: constructeasy
+    ports:
+      - '5432:5432'
+    volumes:
+      - constructeasy_pg_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+
+volumes:
+  constructeasy_pg_data:

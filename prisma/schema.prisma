@@ -1,0 +1,19 @@
+// Constructeasy — Prisma Schema
+// Batch 0 (Core Infrastructure): connection + generator only.
+//
+// Per the Phase 3 Backend Implementation Plan, Section 6:
+// "One Prisma schema file, incrementally extended per batch — not one
+// giant upfront migration." Models are added starting Batch 1 (Locations
+// & Lookups) in the exact order of the Sign-Off Document's migration order
+// (Section 6.4). No models are added here that belong to a later batch.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- Batch 1+ models are appended below in subsequent batches. ---
