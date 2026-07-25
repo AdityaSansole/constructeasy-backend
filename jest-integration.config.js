@@ -1,14 +1,14 @@
 module.exports = {
   moduleFileExtensions: ['js', 'json', 'ts'],
   rootDir: '.',
-  testMatch: ['<rootDir>/test/unit/**/*.spec.ts'],
+  testMatch: ['<rootDir>/test/integration/**/*.spec.ts'],
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest',
   },
   setupFiles: ['reflect-metadata'],
-  collectCoverageFrom: ['src/**/*.(t|j)s'],
-  coverageDirectory: './coverage',
   testEnvironment: 'node',
+  testTimeout: 30000,
+  maxWorkers: 1,
   moduleNameMapper: {
     '^@config/(.*)$': '<rootDir>/src/config/$1',
     '^@common/(.*)$': '<rootDir>/src/common/$1',

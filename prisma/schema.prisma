@@ -5,7 +5,7 @@
 // "One Prisma schema file, incrementally extended per batch — not one
 // giant upfront migration." Models are added starting Batch 1 (Locations
 // & Lookups) in the exact order of the Sign-Off Document's migration order
-// (Section 6.4). No models are added here that belong to a later batch.
+// (Section 6.4).
 
 generator client {
   provider = "prisma-client-js"
@@ -16,4 +16,104 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// --- Batch 1+ models are appended below in subsequent batches. ---
+// --- Batch 1: Locations & Lookups ---
+// Order matches Sign-Off Section 6.4 migration order exactly.
+
+model Country {
+  id        String   @id @default(uuid())
+  name      String
+  isoCode   String   @unique @map("iso_code")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  states State[]
+
+  @@map("countries")
+}
+
+model Locale {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  name      String
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("locales")
+}
+
+model Role {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("roles")
+}
+
+model SubscriptionPlan {
+  id              String   @id @default(uuid())
+  name            String
+  pricePaise      Int      @map("price_paise")
+  billingInterval String   @map("billing_interval")
+  isActive        Boolean  @default(true) @map("is_active")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("subscription_plans")
+}
+
+model ProfessionalCategory {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("professional_categories")
+}
+
+model State {
+  id        String   @id @default(uuid())
+  countryId String   @map("country_id")
+  name      String
+  code      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  country Country @relation(fields: [countryId], references: [id])
+  cities  City[]
+
+  @@map("states")
+}
+
+model City {
+  id         String    @id @default(uuid())
+  stateId    String    @map("state_id")
+  name       String
+  slug       String    @unique
+  isActive   Boolean   @default(false) @map("is_active")
+  launchedAt DateTime? @map("launched_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  state      State       @relation(fields: [stateId], references: [id])
+  localities Locality[]
+
+  @@map("cities")
+}
+
+model Locality {
+  id        String   @id @default(uuid())
+  cityId    String   @map("city_id")
+  name      String
+  slug      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  city City @relation(fields: [cityId], references: [id])
+
+  @@unique([cityId, slug])
+  @@map("localities")
+}

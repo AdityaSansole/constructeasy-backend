@@ -20,6 +20,8 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
 import { ResponseEnvelopeInterceptor } from './common/interceptors/response-envelope.interceptor';
 
 import { HealthModule } from './modules/health/health.module';
+import { LocationsModule } from './modules/locations/locations.module';
+import { LookupsModule } from './modules/lookups/lookups.module';
 
 @Module({
   imports: [
@@ -44,6 +46,8 @@ import { HealthModule } from './modules/health/health.module';
 
     // --- Feature modules (Batch 1+ modules are added here incrementally) ---
     HealthModule,
+    LocationsModule,
+    LookupsModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: GlobalExceptionFilter },
