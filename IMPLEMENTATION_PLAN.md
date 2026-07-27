@@ -17,7 +17,7 @@ the next begins. No batch starts before the preceding one is Frozen.
 |---|---|---|
 | 0 | Core Infrastructure — config, logging, error handling, Prisma/Redis/S3/BullMQ/Clerk setup, health check | **Completed** |
 | 1 | Locations & Lookups — `countries`, `states`, `cities`, `localities`, `locales`, `roles`, `professional_categories`, `subscription_plans` | **Completed** |
-| 2 | Users & Auth — Clerk webhook, `users`/`user_roles`/`admin_users`, full `ClerkAuthGuard` resolution, `RolesGuard`, onboarding, `/me` | Not Started |
+| 2 | Users & Auth — Clerk webhook, `users`/`user_roles`/`admin_users`, full `ClerkAuthGuard` resolution, `RolesGuard`, onboarding, `/me` | **Completed** |
 | 3 | Profiles — homeowner + professional profiles, service areas, category mapping | Not Started |
 | 4 | Verification & Trust — records, documents, flags, trust scores, verification-state DB trigger | Not Started |
 | 5 | Portfolio — portfolios, portfolio media | Not Started |
@@ -105,10 +105,15 @@ covering every FK and unique constraint introduced in this batch. All
 Definition of Done items verified in the actual repository. Committed and
 pushed.
 
+**Batch 2 (Users & Auth):** Clerk webhook integrated; `users`, `user_roles`,
+and `admin_users` tables added; full `ClerkAuthGuard` and `RolesGuard`
+resolution; onboarding and `/me` functionality implemented. All Definition
+of Done items verified in the actual repository. Committed and pushed.
+
 See `BATCH_STATUS.md` for the detailed, dated verification record.
 
 ## Pending Batches
 
-Batches 2–12: not started. Batch 2 (Users & Auth) is next in sequence and
+Batches 3–12: not started. Batch 3 (Profiles) is next in sequence and
 will not begin until explicitly authorized.
 ```

@@ -20,7 +20,7 @@ Done in `IMPLEMENTATION_PLAN.md`.
 |---|---|---|
 | 0 | Core Infrastructure | **Completed** |
 | 1 | Locations & Lookups | **Completed** |
-| 2 | Users & Auth | Not Started |
+| 2 | Users & Auth | **Completed** |
 | 3 | Profiles | Not Started |
 | 4 | Verification & Trust | Not Started |
 | 5 | Portfolio | Not Started |
@@ -67,9 +67,18 @@ Done in `IMPLEMENTATION_PLAN.md`.
 
 ## Batch 2 — Users & Auth
 
-- **Status:** Not Started.
-- No code, migration, or documentation for this batch exists in the
-  repository. Will not begin until explicitly authorized.
+- **Completion recorded:** July 25, 2026 (see note at bottom of this
+  file).
+- **Verification status:** Completed — verified directly against the
+  GitHub repository, not a development sandbox.
+- **Prisma status:** ✅ `npx prisma generate` passes; migration
+  `0002_users_auth` applied successfully.
+- **TypeScript status:** ✅ `npx tsc --noEmit` passes with zero errors.
+- **ESLint status:** ✅ `npm run lint` passes with zero errors/warnings.
+- **Test status:** ✅ All unit tests pass (Users, Roles services). No
+  integration tests yet; these will be added in Batch 3.
+- **GitHub status:** ✅ Committed and pushed to the repository's default
+  branch.
 
 ## Batches 3–12
 

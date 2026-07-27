@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from 'nestjs-pino';
 import helmet from 'helmet';
+import { raw } from 'express';
 import { AppModule } from './app.module';
 import { createValidationPipe } from './common/pipes/validation-pipe.factory';
 
@@ -14,6 +15,7 @@ async function bootstrap(): Promise<void> {
   app.useLogger(app.get(Logger));
   app.use(helmet());
   app.setGlobalPrefix('api/v1');
+  app.use('/api/v1/webhooks/clerk', raw({ type: 'application/json' }));
   app.useGlobalPipes(createValidationPipe());
   app.enableCors(); // origin allowlist tightened once frontend domain is known (deployment config, not app code)
 
