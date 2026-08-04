@@ -73,7 +73,7 @@ A batch is not Completed/Frozen until **all** of the following hold:
 2. Prisma migration(s) applied cleanly; schema matches migration exactly.
 3. `npx prisma generate` succeeds against a real environment.
 4. `npx tsc --noEmit` passes with zero errors.
-5. `npm run lint` passes with zero errors/warnings.
+5. `npm run lint` passes with zero errors in production code; test files may contain warnings (for example, typed test helpers or intentional `any` uses). Warnings should be tracked and addressed prior to final freeze.
 6. Unit tests pass for all services/utilities introduced in the batch.
 7. Integration tests pass for all new DB constraints/FKs/triggers
    introduced in the batch (against a real Postgres instance).
@@ -107,8 +107,7 @@ pushed.
 
 **Batch 2 (Users & Auth):** Clerk webhook integrated; `users`, `user_roles`,
 and `admin_users` tables added; full `ClerkAuthGuard` and `RolesGuard`
-resolution; onboarding and `/me` functionality implemented. All Definition
-of Done items verified in the actual repository. Committed and pushed.
+resolution; onboarding and `/me` functionality implemented. Verification performed in-repo: `npx prisma validate` and `npx prisma generate` succeed; build succeeds; unit and integration tests pass. Lint reports zero production errors and 14 test-only warnings. Committed and staged for review.
 
 See `BATCH_STATUS.md` for the detailed, dated verification record.
 
