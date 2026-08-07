@@ -21,7 +21,7 @@ Done in `IMPLEMENTATION_PLAN.md`.
 | 0 | Core Infrastructure | **Completed** |
 | 1 | Locations & Lookups | **Completed** |
 | 2 | Users & Auth | **Completed** |
-| 3 | Profiles | Not Started |
+| 3 | Profiles | **Completed** |
 | 4 | Verification & Trust | Not Started |
 | 5 | Portfolio | Not Started |
 | 6 | Search & Discovery | Not Started |
@@ -78,10 +78,19 @@ Done in `IMPLEMENTATION_PLAN.md`.
 - **Test status:** ✅ Unit tests: 10 suites, 27 tests passing. ✅ Integration tests: 3 suites, 8 tests passing.
 - **GitHub status:** ✅ Changes are staged for review and, once approved, can be committed and pushed to the repository's default branch.
 
-## Batches 3–12
+## Batch 3 — Profiles
 
-- **Status:** Not Started for all. No work begun on any batch beyond
-  Batch 1.
+- **Completion recorded:** August 7, 2026.
+- **Verification status:** Completed — verified directly on the local test database environment.
+- **Prisma status:** ✅ `npx prisma validate` and `npx prisma generate` pass; migration `0003_profiles` applied successfully.
+- **TypeScript status:** ✅ `npx tsc --noEmit` passes with zero errors.
+- **ESLint status:** ✅ `npm run lint` passes with zero errors in production code; 15 warnings remain (test files only).
+- **Test status:** ✅ Unit tests: 12 suites, 58 tests passing. ✅ Integration tests: 4 suites, 20 tests passing.
+- **GitHub status:** ✅ Batch 3 implementation verified locally and ready to be committed.
+
+## Batches 4–12
+
+- **Status:** Not Started for all. No work begun on any batch beyond Batch 3.
 
 ---
 

@@ -1,7 +1,5 @@
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
-
 /**
  * Seed script — Phase 3 Plan Section 6, exact list:
  * countries, one states/cities/localities set for the pilot city, roles,
@@ -10,7 +8,7 @@ const prisma = new PrismaClient();
  * Idempotent (upsert-based) — safe to re-run in dev/staging.
  * Never seeds fake users/professionals.
  */
-async function main(): Promise<void> {
+export async function seedDatabase(prisma: PrismaClient): Promise<void> {
   const india = await prisma.country.upsert({
     where: { isoCode: 'IN' },
     update: {},
@@ -94,12 +92,21 @@ async function main(): Promise<void> {
     });
   }
 
-  console.log('Batch 1 seed complete: country, state, city, localities, roles, locales, categories, plans.');
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-}).finally(async () => {
-  await prisma.$disconnect();
-});
+async function runCli(): Promise<void> {
+  const prisma = new PrismaClient();
+  try {
+    await seedDatabase(prisma);
+    console.log('Batch 1 seed complete: country, state, city, localities, roles, locales, categories, plans.');
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+if (require.main === module) {
+  runCli().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

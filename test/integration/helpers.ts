@@ -8,6 +8,25 @@ import {
   queueToken,
 } from '../../src/infrastructure/queue/queue.constants';
 
+/** Minimal env defaults so integration tests and global setup can reach Postgres/Redis. */
+export function applyIntegrationTestEnvDefaults(): void {
+  process.env.NODE_ENV = process.env.NODE_ENV ?? 'test';
+  process.env.PORT = process.env.PORT ?? '4001';
+  process.env.DATABASE_URL = process.env.DATABASE_URL ?? 'postgresql://postgres:postgres@localhost:5432/constructeasy_test';
+  process.env.REDIS_URL = process.env.REDIS_URL ?? 'redis://localhost:6379';
+  process.env.CLERK_SECRET_KEY = process.env.CLERK_SECRET_KEY ?? 'test';
+  process.env.CLERK_PUBLISHABLE_KEY = process.env.CLERK_PUBLISHABLE_KEY ?? 'test';
+  process.env.CLERK_WEBHOOK_SIGNING_SECRET = process.env.CLERK_WEBHOOK_SIGNING_SECRET ?? 'test';
+  process.env.AWS_REGION = process.env.AWS_REGION ?? 'us-east-1';
+  process.env.S3_PUBLIC_BUCKET_NAME = process.env.S3_PUBLIC_BUCKET_NAME ?? 'test-public';
+  process.env.S3_PRIVATE_BUCKET_NAME = process.env.S3_PRIVATE_BUCKET_NAME ?? 'test-private';
+  process.env.RATE_LIMIT_AUTHENTICATED_PER_MIN = process.env.RATE_LIMIT_AUTHENTICATED_PER_MIN ?? '60';
+  process.env.RATE_LIMIT_UNAUTHENTICATED_PER_MIN = process.env.RATE_LIMIT_UNAUTHENTICATED_PER_MIN ?? '10';
+  process.env.CACHE_TTL_LOOKUP_SECONDS = process.env.CACHE_TTL_LOOKUP_SECONDS ?? '60';
+  process.env.CACHE_TTL_LIST_SECONDS = process.env.CACHE_TTL_LIST_SECONDS ?? '60';
+  process.env.CACHE_TTL_DASHBOARD_SECONDS = process.env.CACHE_TTL_DASHBOARD_SECONDS ?? '60';
+}
+
 export class MockClerkService {
   public lastVerifiedToken?: string;
   public webhookShouldThrow = false;
@@ -25,23 +44,7 @@ export class MockClerkService {
 }
 
 export async function bootstrapTestApp() {
-  // Set minimal environment defaults for integration tests so the AppModule
-  // environment validation passes in CI/local dev where env vars may be missing.
-  process.env.NODE_ENV = process.env.NODE_ENV ?? 'test';
-  process.env.PORT = process.env.PORT ?? '4001';
-  process.env.DATABASE_URL = process.env.DATABASE_URL ?? 'postgresql://postgres:postgres@localhost:5432/constructeasy_test';
-  process.env.REDIS_URL = process.env.REDIS_URL ?? 'redis://localhost:6379';
-  process.env.CLERK_SECRET_KEY = process.env.CLERK_SECRET_KEY ?? 'test';
-  process.env.CLERK_PUBLISHABLE_KEY = process.env.CLERK_PUBLISHABLE_KEY ?? 'test';
-  process.env.CLERK_WEBHOOK_SIGNING_SECRET = process.env.CLERK_WEBHOOK_SIGNING_SECRET ?? 'test';
-  process.env.AWS_REGION = process.env.AWS_REGION ?? 'us-east-1';
-  process.env.S3_PUBLIC_BUCKET_NAME = process.env.S3_PUBLIC_BUCKET_NAME ?? 'test-public';
-  process.env.S3_PRIVATE_BUCKET_NAME = process.env.S3_PRIVATE_BUCKET_NAME ?? 'test-private';
-  process.env.RATE_LIMIT_AUTHENTICATED_PER_MIN = process.env.RATE_LIMIT_AUTHENTICATED_PER_MIN ?? '60';
-  process.env.RATE_LIMIT_UNAUTHENTICATED_PER_MIN = process.env.RATE_LIMIT_UNAUTHENTICATED_PER_MIN ?? '10';
-  process.env.CACHE_TTL_LOOKUP_SECONDS = process.env.CACHE_TTL_LOOKUP_SECONDS ?? '60';
-  process.env.CACHE_TTL_LIST_SECONDS = process.env.CACHE_TTL_LIST_SECONDS ?? '60';
-  process.env.CACHE_TTL_DASHBOARD_SECONDS = process.env.CACHE_TTL_DASHBOARD_SECONDS ?? '60';
+  applyIntegrationTestEnvDefaults();
 
   const { AppModule } = await import('../../src/app.module');
 

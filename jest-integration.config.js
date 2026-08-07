@@ -6,6 +6,7 @@ module.exports = {
     '^.+\\.(t|j)s$': 'ts-jest',
   },
   setupFiles: ['reflect-metadata'],
+  globalSetup: '<rootDir>/test/integration/global-setup.ts',
   testEnvironment: 'node',
   testTimeout: 30000,
   maxWorkers: 1,

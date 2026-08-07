@@ -1,7 +1,7 @@
 -- Migration: 0002_users_auth
 -- Batch 2 — Users & Auth
 
-CREATE TYPE "webhook_provider" AS ENUM ('clerk');
+CREATE TYPE "WebhookProvider" AS ENUM ('clerk');
 
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
@@ -49,7 +49,7 @@ ALTER TABLE "admin_users" ADD CONSTRAINT "admin_users_user_id_fkey"
 
 CREATE TABLE "webhook_events" (
     "id" TEXT NOT NULL,
-    "provider" "webhook_provider" NOT NULL,
+    "provider" "WebhookProvider" NOT NULL,
     "event_id" TEXT NOT NULL,
     "event_type" TEXT NOT NULL,
     "payload" JSONB NOT NULL,

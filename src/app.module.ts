@@ -16,6 +16,7 @@ import { ClerkModule } from './infrastructure/clerk/clerk.module';
 import { AppLoggingModule } from './infrastructure/logging/logging.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { UsersModule } from './modules/users/users.module';
+import { ProfilesModule } from './modules/profiles/profiles.module';
 
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
@@ -52,6 +53,7 @@ import { LookupsModule } from './modules/lookups/lookups.module';
     LookupsModule,
     WebhooksModule,
     UsersModule,
+    ProfilesModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: GlobalExceptionFilter },
