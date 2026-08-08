@@ -22,8 +22,8 @@ Done in `IMPLEMENTATION_PLAN.md`.
 | 1 | Locations & Lookups | **Completed** |
 | 2 | Users & Auth | **Completed** |
 | 3 | Profiles | **Completed** |
-| 4 | Verification & Trust | Not Started |
-| 5 | Portfolio | Not Started |
+| 4 | Verification & Trust | **Accepted / Frozen** |
+| 5 | Portfolio & Media Showcase | **Accepted / Frozen** |
 | 6 | Search & Discovery | Not Started |
 | 7 | Contacts | Not Started |
 | 8 | Reviews | Not Started |
@@ -86,11 +86,31 @@ Done in `IMPLEMENTATION_PLAN.md`.
 - **TypeScript status:** ✅ `npx tsc --noEmit` passes with zero errors.
 - **ESLint status:** ✅ `npm run lint` passes with zero errors in production code; 15 warnings remain (test files only).
 - **Test status:** ✅ Unit tests: 12 suites, 58 tests passing. ✅ Integration tests: 4 suites, 20 tests passing.
-- **GitHub status:** ✅ Batch 3 implementation verified locally and ready to be committed.
+- **GitHub status:** ✅ Batch 3 implementation verified locally and committed.
 
-## Batches 4–12
+## Batch 4 — Verification & Trust
 
-- **Status:** Not Started for all. No work begun on any batch beyond Batch 3.
+- **Completion recorded:** August 8, 2026.
+- **Verification status:** Accepted & Frozen — verified against requirements, DB invariants, optimistic locking, and transaction atomicity.
+- **Prisma status:** ✅ `npx prisma validate` and `npx prisma generate` pass; migration `0004_verification_and_trust` applied successfully.
+- **TypeScript status:** ✅ `nest build` passes with zero errors.
+- **ESLint status:** ✅ `npm run lint` passes with zero errors in production code.
+- **Test status:** ✅ Unit tests: 16 suites, 75 tests passing. ✅ Integration tests: 5 suites, 24 tests passing.
+- **GitHub status:** ✅ Verified and frozen locally.
+
+## Batch 5 — Portfolio & Media Showcase
+
+- **Completion recorded:** August 8, 2026.
+- **Verification status:** Accepted & Frozen — verified against DB migration `0005_portfolio_and_media`, single cover DB index, atomic projectCount, S3 public storage, Redis cache invalidation, and public showcase filters.
+- **Prisma status:** ✅ `npx prisma validate` and `npx prisma generate` pass; migration `0005_portfolio_and_media` applied successfully.
+- **TypeScript status:** ✅ `nest build` passes with zero errors.
+- **ESLint status:** ✅ `npm run lint` passes with zero errors in production code.
+- **Test status:** ✅ Unit tests: 18 suites, 86 tests passing. ✅ Integration tests: 6 suites, 30 tests passing.
+- **GitHub status:** ✅ Verified and ready to push to remote tracking branch `origin/batch-3`.
+
+## Batches 6–12
+
+- **Status:** Not Started for all. No work begun on any batch beyond Batch 5.
 
 ---
 

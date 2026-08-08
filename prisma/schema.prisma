@@ -73,6 +73,7 @@ model User {
   adminUser           AdminUser?
   homeownerProfile    HomeownerProfile?
   professionalProfile ProfessionalProfile?
+  verificationHistories VerificationHistory[]
 
   @@index([localeId])
   @@map("users")
@@ -98,7 +99,8 @@ model AdminUser {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  user User @relation(fields: [userId], references: [id])
+  user                User                 @relation(fields: [userId], references: [id])
+  verificationReviews VerificationRecord[]
 
   @@map("admin_users")
 }
@@ -188,6 +190,7 @@ model Locality {
   homeownerProfiles    HomeownerProfile[]
   primaryProfessionals ProfessionalProfile[] @relation("PrimaryLocality")
   serviceAreas         ServiceArea[]
+  portfolioProjects    PortfolioProject[]
 
   @@unique([cityId, slug])
   @@map("localities")
@@ -238,15 +241,18 @@ model ProfessionalProfile {
   isPublished       Boolean           @default(false) @map("is_published")
   averageRating     Decimal           @default(0) @db.Decimal(3, 2) @map("average_rating")
   reviewCount       Int               @default(0) @map("review_count")
+  projectCount      Int               @default(0) @map("project_count")
 
   deletedAt  DateTime? @map("deleted_at")
   createdAt  DateTime  @default(now()) @map("created_at")
   updatedAt  DateTime  @updatedAt @map("updated_at")
 
-  user            User                      @relation(fields: [userId], references: [id], onDelete: Restrict)
-  primaryLocality Locality                  @relation("PrimaryLocality", fields: [primaryLocalityId], references: [id], onDelete: Restrict)
-  serviceAreas    ServiceArea[]
-  categoryMap     ProfessionalCategoryMap[]
+  user                User                      @relation(fields: [userId], references: [id], onDelete: Restrict)
+  primaryLocality     Locality                  @relation("PrimaryLocality", fields: [primaryLocalityId], references: [id], onDelete: Restrict)
+  serviceAreas        ServiceArea[]
+  categoryMap         ProfessionalCategoryMap[]
+  verificationRecords VerificationRecord[]
+  portfolioProjects   PortfolioProject[]
 
   @@index([isPublished, primaryLocalityId])
   @@index([isPublished, averageRating(sort: Desc)])
@@ -284,3 +290,140 @@ model ProfessionalCategoryMap {
   @@index([categoryId])
   @@map("professional_category_map")
 }
+
+// --- Batch 4: Verification & Trust ---
+
+enum VerificationStatus {
+  draft
+  pending
+  info_requested
+  approved
+  rejected
+  suspended
+}
+
+enum DocumentType {
+  identity_proof
+  gstin_certificate
+  council_of_architecture_reg
+  engineering_council_reg
+  degree_certificate
+  trade_license
+  incorporation_certificate
+}
+
+enum DocumentStatus {
+  pending
+  verified
+  rejected
+}
+
+model VerificationRecord {
+  id             String             @id @default(uuid())
+  professionalId String             @map("professional_id")
+  status         VerificationStatus @default(draft)
+  version        Int                @default(1)
+  reviewedBy     String?            @map("reviewed_by")
+  reviewerNotes  String?            @map("reviewer_notes")
+  submittedAt    DateTime?          @map("submitted_at")
+  reviewedAt     DateTime?          @map("reviewed_at")
+  createdAt      DateTime           @default(now()) @map("created_at")
+  updatedAt      DateTime           @updatedAt @map("updated_at")
+
+  professional ProfessionalProfile    @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  reviewer     AdminUser?             @relation(fields: [reviewedBy], references: [id], onDelete: SetNull)
+  documents    VerificationDocument[]
+  history      VerificationHistory[]
+
+  @@index([professionalId])
+  @@index([status])
+  @@map("verification_records")
+}
+
+model VerificationDocument {
+  id                   String         @id @default(uuid())
+  verificationRecordId String         @map("verification_record_id")
+  documentType         DocumentType   @map("document_type")
+  documentNumber       String?        @map("document_number")
+  fileKey              String         @map("file_key")
+  originalFilename     String         @map("original_filename")
+  mimeType             String         @map("mime_type")
+  fileSize             Int            @map("file_size")
+  checksum             String?
+  status               DocumentStatus @default(pending)
+  rejectionReason      String?        @map("rejection_reason")
+  createdAt            DateTime       @default(now()) @map("created_at")
+  updatedAt            DateTime       @updatedAt @map("updated_at")
+
+  verificationRecord VerificationRecord @relation(fields: [verificationRecordId], references: [id], onDelete: Cascade)
+
+  @@unique([verificationRecordId, documentType])
+  @@index([verificationRecordId])
+  @@map("verification_documents")
+}
+
+model VerificationHistory {
+  id                   String             @id @default(uuid())
+  verificationRecordId String             @map("verification_record_id")
+  fromStatus           VerificationStatus @map("from_status")
+  toStatus             VerificationStatus @map("to_status")
+  actorUserId          String             @map("actor_user_id")
+  reason               String?
+  createdAt            DateTime           @default(now()) @map("created_at")
+
+  verificationRecord VerificationRecord @relation(fields: [verificationRecordId], references: [id], onDelete: Cascade)
+  actor              User               @relation(fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@index([verificationRecordId])
+  @@map("verification_history")
+}
+
+// --- Batch 5: Portfolio & Media Showcase ---
+
+model PortfolioProject {
+  id             String              @id @default(uuid())
+  professionalId String              @map("professional_id")
+  title          String
+  slug           String              @unique
+  description    String?             @db.Text
+  projectType    String?             @map("project_type")
+  completionYear Int?                @map("completion_year")
+  costInr        Decimal?            @map("cost_inr") @db.Decimal(12, 2)
+  localityId     String?             @map("locality_id")
+  isFeatured     Boolean             @default(false) @map("is_featured")
+  isPublished    Boolean             @default(true) @map("is_published")
+  displayOrder   Int                 @default(0) @map("display_order")
+  createdAt      DateTime            @default(now()) @map("created_at")
+  updatedAt      DateTime            @updatedAt @map("updated_at")
+
+  professional ProfessionalProfile @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  locality     Locality?           @relation(fields: [localityId], references: [id], onDelete: SetNull)
+  media        PortfolioMedia[]
+
+  @@index([professionalId, isPublished, displayOrder])
+  @@index([localityId])
+  @@map("portfolio_projects")
+}
+
+model PortfolioMedia {
+  id                 String           @id @default(uuid())
+  portfolioProjectId String           @map("portfolio_project_id")
+  fileKey            String           @map("file_key")
+  originalFilename   String           @map("original_filename")
+  mimeType           String           @map("mime_type")
+  fileSize           Int              @map("file_size")
+  width              Int?
+  height             Int?
+  caption            String?
+  displayOrder       Int              @default(0) @map("display_order")
+  isCover            Boolean          @default(false) @map("is_cover")
+  createdAt          DateTime         @default(now()) @map("created_at")
+  updatedAt          DateTime         @updatedAt @map("updated_at")
+
+  project PortfolioProject @relation(fields: [portfolioProjectId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioProjectId, displayOrder])
+  @@map("portfolio_media")
+}
+
+

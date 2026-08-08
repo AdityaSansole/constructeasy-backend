@@ -59,7 +59,7 @@ export async function bootstrapTestApp() {
   const prisma = moduleRef.get(PrismaService);
   // attempt to clean DB tables used by tests; if not available this will fail in runtime
   try {
-    await prisma.$executeRaw`TRUNCATE TABLE webhook_events, user_roles, admin_users, users RESTART IDENTITY CASCADE`;
+    await prisma.$executeRaw`TRUNCATE TABLE portfolio_media, portfolio_projects, verification_history, verification_documents, verification_records, professional_category_map, service_areas, professional_profiles, homeowner_profiles, webhook_events, user_roles, admin_users, users RESTART IDENTITY CASCADE`;
   } catch {
     // ignore if DB not available in this environment
   }
