@@ -19,6 +19,7 @@ import { UsersModule } from './modules/users/users.module';
 import { ProfilesModule } from './modules/profiles/profiles.module';
 import { VerificationModule } from './modules/verification/verification.module';
 import { PortfolioModule } from './modules/portfolio/portfolio.module';
+import { SearchModule } from './modules/search/search.module';
 
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
@@ -58,6 +59,7 @@ import { LookupsModule } from './modules/lookups/lookups.module';
     ProfilesModule,
     VerificationModule,
     PortfolioModule,
+    SearchModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: GlobalExceptionFilter },

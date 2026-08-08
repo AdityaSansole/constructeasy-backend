@@ -106,11 +106,21 @@ Done in `IMPLEMENTATION_PLAN.md`.
 - **TypeScript status:** ✅ `nest build` passes with zero errors.
 - **ESLint status:** ✅ `npm run lint` passes with zero errors in production code.
 - **Test status:** ✅ Unit tests: 18 suites, 86 tests passing. ✅ Integration tests: 6 suites, 30 tests passing.
-- **GitHub status:** ✅ Verified and ready to push to remote tracking branch `origin/batch-3`.
+- **GitHub status:** ✅ Verified and pushed to remote tracking branch `origin/batch-3`.
 
-## Batches 6–12
+## Batch 6 — Search & Discovery
 
-- **Status:** Not Started for all. No work begun on any batch beyond Batch 5.
+- **Completion recorded:** August 8, 2026.
+- **Verification status:** Completed — read-layer implemented over Profiles, Verification, Portfolio, and Locations. Multi-criteria search, trust-first deterministic ranking, whitelisted public DTOs, comparison endpoint (2-4 unique professionals), and 300s Redis query caching verified. Zero schema migration needed (`0006` omitted as existing indexes provide full query optimization).
+- **Prisma status:** ✅ `npx prisma validate` and `npx prisma generate` pass.
+- **TypeScript status:** ✅ `nest build` passes with zero errors.
+- **ESLint status:** ✅ `npm run lint` passes with zero errors in production code.
+- **Test status:** ✅ Unit tests: 19 suites, 93 tests passing. ✅ Integration tests: 7 suites, 35 tests passing.
+- **GitHub status:** ✅ Staged and ready for acceptance review.
+
+## Batches 7–12
+
+- **Status:** Not Started for all. No work begun on any batch beyond Batch 6.
 
 ---
 
