@@ -119,9 +119,72 @@ describe('Contacts & Lead Generation — integration', () => {
         }),
       ).rejects.toThrow();
     });
+    it('handles real concurrent duplicate creation with exactly 1 winner and 1 ConflictException (409)', async () => {
+      const homeowner = await createHomeowner('clerk-home-cdup', 'Concurrent Homeowner');
+      const prof = await createProfessional('clerk-prof-cdup', 'Concurrent Builder', VerificationLevel.level_1, true);
+
+      // Execute 2 concurrent lead creation requests
+      const results = await Promise.allSettled([
+        contactsService.createContact(homeowner.userId, ['homeowner'], {
+          professionalId: prof.profile.id,
+          message: 'Concurrent lead 1',
+        }),
+        contactsService.createContact(homeowner.userId, ['homeowner'], {
+          professionalId: prof.profile.id,
+          message: 'Concurrent lead 2',
+        }),
+      ]);
+
+      const fulfilled = results.filter((r) => r.status === 'fulfilled');
+      const rejected = results.filter((r) => r.status === 'rejected');
+
+      expect(fulfilled.length).toBe(1);
+      expect(rejected.length).toBe(1);
+
+      // Verify DB contains exactly 1 pending contact and 1 history record
+      const dbContacts = await prisma.contact.findMany({
+        where: { homeownerId: homeowner.profile.id, professionalId: prof.profile.id },
+      });
+      expect(dbContacts.length).toBe(1);
+
+      const dbHistories = await prisma.contactHistory.findMany({
+        where: { contactId: dbContacts[0].id },
+      });
+      expect(dbHistories.length).toBe(1);
+    });
   });
 
   describe('State Machine Transitions & Audit History', () => {
+    it('handles real concurrent accept vs cancel with exactly 1 winner and 1 StateConflictException (409)', async () => {
+      const homeowner = await createHomeowner('clerk-home-race', 'Race Homeowner');
+      const prof = await createProfessional('clerk-prof-race', 'Race Builder', VerificationLevel.level_1, true);
+
+      const contact = await contactsService.createContact(homeowner.userId, ['homeowner'], {
+        professionalId: prof.profile.id,
+        message: 'Concurrent state race inquiry',
+      });
+
+      // Execute concurrent accept and cancel calls
+      const results = await Promise.allSettled([
+        contactsService.acceptContact(prof.userId, contact.id),
+        contactsService.cancelContact(homeowner.userId, contact.id),
+      ]);
+
+      const fulfilled = results.filter((r) => r.status === 'fulfilled');
+      const rejected = results.filter((r) => r.status === 'rejected');
+
+      expect(fulfilled.length).toBe(1);
+      expect(rejected.length).toBe(1);
+
+      // Final status must be either accepted or canceled
+      const dbContact = await prisma.contact.findUnique({ where: { id: contact.id } });
+      expect([ContactStatus.accepted, ContactStatus.canceled]).toContain(dbContact?.status);
+
+      // Exactly 2 history entries exist (NULL -> pending, and pending -> final state)
+      const histories = await prisma.contactHistory.findMany({ where: { contactId: contact.id } });
+      expect(histories.length).toBe(2);
+    });
+
     it('allows professional to accept lead and sets respondedAt timestamp', async () => {
       const homeowner = await createHomeowner('clerk-home-acc', 'David Homeowner');
       const prof = await createProfessional('clerk-prof-acc', 'Accepting Arch', VerificationLevel.level_1, true);
@@ -194,18 +257,20 @@ describe('Contacts & Lead Generation — integration', () => {
   });
 
   describe('IDOR & PII Isolation', () => {
-    it('returns NotFoundException (404) when an unrelated user attempts to fetch contact details', async () => {
+    it('returns NotFoundException (404) when an unrelated homeowner OR unrelated professional attempts to fetch contact details', async () => {
       const homeowner = await createHomeowner('clerk-home-pii', 'Henry Homeowner');
       const prof = await createProfessional('clerk-prof-pii', 'PII Builder', VerificationLevel.level_1, true);
-      const intruder = await createHomeowner('clerk-intruder', 'Intruder User');
+      const intruderHomeowner = await createHomeowner('clerk-intruder-home', 'Intruder Homeowner');
+      const intruderProfessional = await createProfessional('clerk-intruder-prof', 'Intruder Professional', VerificationLevel.level_1, true);
 
       const contact = await contactsService.createContact(homeowner.userId, ['homeowner'], {
         professionalId: prof.profile.id,
         message: 'Secret lead details',
       });
 
-      // Intruder receives 404 NotFoundException
-      await expect(contactsService.getContactDetail(intruder.userId, contact.id)).rejects.toThrow();
+      // Both unrelated homeowner and unrelated professional receive 404 NotFoundException
+      await expect(contactsService.getContactDetail(intruderHomeowner.userId, contact.id)).rejects.toThrow();
+      await expect(contactsService.getContactDetail(intruderProfessional.userId, contact.id)).rejects.toThrow();
     });
   });
 });

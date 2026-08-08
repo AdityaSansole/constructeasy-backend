@@ -1,6 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { PrismaService } from '../../src/infrastructure/prisma/prisma.service';
 import { SearchService } from '../../src/modules/search/search.service';
+import { RedisService, RedisNamespace } from '../../src/infrastructure/redis/redis.service';
 import { VerificationLevel } from '@prisma/client';
 import { SearchProfessionalsDto } from '../../src/modules/search/dto/search-professionals.dto';
 import {
@@ -18,9 +19,12 @@ describe('Search & Discovery — integration', () => {
   let categoryId: string;
   let categorySlug: string;
 
+  let redisService: RedisService;
+
   beforeAll(async () => {
     ({ app, prisma, moduleRef } = await bootstrapTestApp());
     searchService = moduleRef.get(SearchService);
+    redisService = moduleRef.get(RedisService);
 
     const locality = await prisma.locality.findFirst({ include: { city: true } });
     if (!locality) throw new Error('Integration test requires seeded locality');
@@ -30,6 +34,10 @@ describe('Search & Discovery — integration', () => {
     if (!category) throw new Error('Integration test requires seeded category');
     categoryId = category.id;
     categorySlug = category.slug;
+  });
+
+  beforeEach(async () => {
+    await redisService.invalidatePattern(RedisNamespace.Cache, '*');
   });
 
   afterAll(async () => {
