@@ -20,6 +20,7 @@ import { ProfilesModule } from './modules/profiles/profiles.module';
 import { VerificationModule } from './modules/verification/verification.module';
 import { PortfolioModule } from './modules/portfolio/portfolio.module';
 import { SearchModule } from './modules/search/search.module';
+import { ContactsModule } from './modules/contacts/contacts.module';
 
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
@@ -60,6 +61,7 @@ import { LookupsModule } from './modules/lookups/lookups.module';
     VerificationModule,
     PortfolioModule,
     SearchModule,
+    ContactsModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: GlobalExceptionFilter },

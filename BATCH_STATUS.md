@@ -111,16 +111,26 @@ Done in `IMPLEMENTATION_PLAN.md`.
 ## Batch 6 — Search & Discovery
 
 - **Completion recorded:** August 8, 2026.
-- **Verification status:** Completed — read-layer implemented over Profiles, Verification, Portfolio, and Locations. Multi-criteria search, trust-first deterministic ranking, whitelisted public DTOs, comparison endpoint (2-4 unique professionals), and 300s Redis query caching verified. Zero schema migration needed (`0006` omitted as existing indexes provide full query optimization).
+- **Verification status:** Accepted & Frozen — read-layer over Profiles, Verification, Portfolio, and Locations. Multi-criteria search, trust-first deterministic ranking, whitelisted public DTOs, comparison endpoint (2-4 unique professionals), and 300s Redis query caching verified.
 - **Prisma status:** ✅ `npx prisma validate` and `npx prisma generate` pass.
 - **TypeScript status:** ✅ `nest build` passes with zero errors.
 - **ESLint status:** ✅ `npm run lint` passes with zero errors in production code.
 - **Test status:** ✅ Unit tests: 19 suites, 93 tests passing. ✅ Integration tests: 7 suites, 35 tests passing.
+- **GitHub status:** ✅ Verified and pushed to remote tracking branch `origin/batch-3`.
+
+## Batch 7 — Contacts
+
+- **Completion recorded:** August 8, 2026.
+- **Verification status:** Completed — Milestone 5 Lead Generation state machine implemented. Verified professional gating (`level_1`/`level_2`), partial unique index pending duplicate lead protection (`contacts_active_pending_idx`), atomic transaction state & audit history (`ContactHistory`), PII isolation, rate limiting (5/hr/homeowner), and direction filtering verified on fresh database.
+- **Prisma status:** ✅ `npx prisma validate` and `npx prisma generate` pass; migration `0006_contacts` applied successfully.
+- **TypeScript status:** ✅ `nest build` passes with zero errors.
+- **ESLint status:** ✅ `npm run lint` passes with zero errors in production code.
+- **Test status:** ✅ Unit tests: 20 suites, 102 tests passing. ✅ Integration tests: 8 suites, 43 tests passing.
 - **GitHub status:** ✅ Staged and ready for acceptance review.
 
-## Batches 7–12
+## Batches 8–12
 
-- **Status:** Not Started for all. No work begun on any batch beyond Batch 6.
+- **Status:** Not Started for all. No work begun on any batch beyond Batch 7.
 
 ---
 

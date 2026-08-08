@@ -74,6 +74,7 @@ model User {
   homeownerProfile    HomeownerProfile?
   professionalProfile ProfessionalProfile?
   verificationHistories VerificationHistory[]
+  contactHistories    ContactHistory[]
 
   @@index([localeId])
   @@map("users")
@@ -191,6 +192,7 @@ model Locality {
   primaryProfessionals ProfessionalProfile[] @relation("PrimaryLocality")
   serviceAreas         ServiceArea[]
   portfolioProjects    PortfolioProject[]
+  contacts             Contact[]
 
   @@unique([cityId, slug])
   @@map("localities")
@@ -219,6 +221,7 @@ model HomeownerProfile {
 
   user     User      @relation(fields: [userId], references: [id], onDelete: Restrict)
   locality Locality? @relation(fields: [localityId], references: [id], onDelete: SetNull)
+  contacts Contact[]
 
   @@index([localityId])
   @@map("homeowner_profiles")
@@ -253,6 +256,7 @@ model ProfessionalProfile {
   categoryMap         ProfessionalCategoryMap[]
   verificationRecords VerificationRecord[]
   portfolioProjects   PortfolioProject[]
+  contacts            Contact[]
 
   @@index([isPublished, primaryLocalityId])
   @@index([isPublished, averageRating(sort: Desc)])
@@ -399,6 +403,7 @@ model PortfolioProject {
   professional ProfessionalProfile @relation(fields: [professionalId], references: [id], onDelete: Cascade)
   locality     Locality?           @relation(fields: [localityId], references: [id], onDelete: SetNull)
   media        PortfolioMedia[]
+  contacts     Contact[]
 
   @@index([professionalId, isPublished, displayOrder])
   @@index([localityId])
@@ -424,6 +429,62 @@ model PortfolioMedia {
 
   @@index([portfolioProjectId, displayOrder])
   @@map("portfolio_media")
+}
+
+// --- Batch 7: Contacts & Lead Generation ---
+
+enum ContactStatus {
+  pending
+  accepted
+  declined
+  canceled
+  archived
+}
+
+model Contact {
+  id             String        @id @default(uuid())
+  homeownerId    String        @map("homeowner_id")
+  professionalId String        @map("professional_id")
+  projectId      String?       @map("project_id")
+  localityId     String?       @map("locality_id")
+  status         ContactStatus @default(pending)
+
+  message        String        @db.Text
+  phone          String?
+  email          String?
+  budgetInr      Decimal?      @map("budget_inr") @db.Decimal(12, 2)
+  timeline       String?
+  declinedReason String?       @map("declined_reason")
+
+  respondedAt    DateTime?     @map("responded_at")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+
+  homeowner    HomeownerProfile     @relation(fields: [homeownerId], references: [id], onDelete: Restrict)
+  professional ProfessionalProfile  @relation(fields: [professionalId], references: [id], onDelete: Restrict)
+  project      PortfolioProject?    @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  locality     Locality?            @relation(fields: [localityId], references: [id], onDelete: SetNull)
+  history      ContactHistory[]
+
+  @@index([homeownerId, status])
+  @@index([professionalId, status])
+  @@map("contacts")
+}
+
+model ContactHistory {
+  id          String         @id @default(uuid())
+  contactId   String         @map("contact_id")
+  fromStatus  ContactStatus? @map("from_status")
+  toStatus    ContactStatus  @map("to_status")
+  actorUserId String         @map("actor_user_id")
+  reason      String?
+  createdAt   DateTime       @default(now()) @map("created_at")
+
+  contact Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  actor   User    @relation(fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@index([contactId])
+  @@map("contact_history")
 }
 
 
